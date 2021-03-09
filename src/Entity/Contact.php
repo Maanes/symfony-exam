@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ContactRepository;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ContactRepository::class)
@@ -20,16 +21,28 @@ class Contact
 
     /**
      * @ORM\Column(type="string", length=128)
+     * @Assert\NotBlank
+     * @Assert\Email(message = "L'adresse mail '{{ value }}' n'est pas une adresse mail valide.")
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank
+     * @Assert\Length(
+     *     min = 6,
+     *     max = 200,
+     *     minMessage = "Votre sujet doit faire plus de {{ limit }} caractères.",
+     *     maxMessage = "Vote sujet ne doit pas dépasser les {{ limit }} caractères"
      */
     private $subject;
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\NotBlank
+     * @Assert\Length(
+     *     min = 50,
+     *     minMessage="Votre message doit faire plus de {{ limit }} caractères."
      */
     private $message;
 
@@ -84,12 +97,12 @@ class Contact
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeInterface
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->created_at;
     }
 
-    public function setCreatedAt(\DateTimeInterface $created_at): self
+    public function setCreatedAt(?DateTimeInterface $created_at): self
     {
         $this->created_at = $created_at;
 

@@ -10,6 +10,14 @@
 
     {% block content %}
         <p>Nous sommes actuellement le : {{ 'now'|date('d/m/Y H:i:s') }} </p>
+
+        {{ form_start(form) }}
+            {{ form_row(form.email) }}
+            {{ form_row(form.subject) }}
+            {{ form_row(form.message) }}
+                <button type="submit" class="btn btn-dark">Valider</button>
+        {{ form_end(form) }}
+
     {% endblock %}
 
 {% endblock %}

@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Contact;
+use App\Form\ContactType;
 use App\Repository\ContactRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -18,21 +20,31 @@ class DefaultController extends AbstractController
 {
      /**
      * @Route("/", name="index")
+      * @param ContactRepository $contactRepository
+      * @return Response
      */
 
-    public function index(ContactRepository & $contactRepository) : Response
+    public function index(ContactRepository $contactRepository) : Response
     {
         $contact = $contactRepository->findAll();
-        $contact = $contactRepository->findByMail('test@test.com');
+        //$contactMail = $contactRepository->findByMail('test@test.com');
 
-        return $this->render('default/index.html.twig',['controller_name' => 'DefaultController',]);
+        return $this->render('default/index.html.twig',
+                            ['controller_name' => 'DefaultController',
+                                'contact'=> $contact,
+                                //'contactMail' => $contactMail,
+                            ]);
+
     }
 
     /**
      * @Route("/contact", name="contact")
+     * @param EntityManagerInterface $em
+     * @param Request $request
+     * @return Response
      */
 
-    public function contact(EntityManagerInterface $em) : Response
+    public function contact(EntityManagerInterface $em, Request $request) : Response
     {
         $contact =new Contact();
 
@@ -43,9 +55,20 @@ class DefaultController extends AbstractController
         $em->persist($contact);
         $em->flush();
 
-        return $this->render('default/contact.html.twig');
+        $form = $this->createForm(ContactType::class, $contact, [
+            'method' => 'POST'
+        ]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($contact);
+            $em->flush();
+
+            return $this->redirectToRoute('index');
+        }
+
+        return $this->render('default/contact.html.twig', ['form'=> $form ->createView()]);
     }
 }
 
-
-?>
