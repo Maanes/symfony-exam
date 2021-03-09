@@ -1,0 +1,15 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Salutations{% endblock %}
+
+{% block body %}
+
+    {% block header %}
+        <h1>Nous Contacter</h1>
+    {% endblock %}
+
+    {% block content %}
+        <p>Nous sommes actuellement le : {{ 'now'|date('d/m/Y H:i:s') }} </p>
+    {% endblock %}
+
+{% endblock %}
